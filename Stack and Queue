@@ -1,0 +1,60 @@
+# Maximum Rectangle Area in Histogram
+
+## 📌 Problem Statement
+Given an array of integers representing the heights of histogram bars (each bar has width 1), find the area of the largest rectangle that can be formed using contiguous bars.
+
+---
+
+## 🧠 Approach
+The problem is solved using a **monotonic increasing stack**:
+
+- Traverse the histogram from left to right
+- Maintain a stack of indices with increasing bar heights
+- When a smaller height is encountered:
+  - Pop elements from the stack
+  - Calculate area considering the popped bar as the smallest height
+- Continue until all bars are processed
+
+This approach ensures each bar is pushed and popped once.
+
+---
+
+## 🧮 Algorithm
+1. Initialize an empty stack and `maxArea = 0`
+2. Traverse the array from index `0` to `n`
+3. Treat the height at index `n` as `0` to empty the stack
+4. For each bar:
+   - While stack is not empty and current height is smaller:
+     - Pop from stack
+     - Calculate width
+     - Update maximum area
+5. Return `maxArea`
+
+---
+
+## 💻 Implementation
+The solution is implemented in **C++** using stack.
+
+```cpp
+// max_rectangle_histogram.cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int largestRectangleArea(vector<int>& heights) {
+    stack<int> st;
+    int maxArea = 0;
+    int n = heights.size();
+
+    for (int i = 0; i <= n; i++) {
+        int currHeight = (i == n) ? 0 : heights[i];
+
+        while (!st.empty() && currHeight < heights[st.top()]) {
+            int h = heights[st.top()];
+            st.pop();
+            int width = st.empty() ? i : i - st.top() - 1;
+            maxArea = max(maxArea, h * width);
+        }
+        st.push(i);
+    }
+    return maxArea;
+}
