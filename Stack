@@ -1,0 +1,76 @@
+# Maximal Rectangle in Binary Matrix
+
+## 📌 Problem Statement
+Given a binary matrix consisting of `0`s and `1`s, find the area of the largest rectangle containing only `1`s.
+
+---
+
+## 🧠 Approach
+The problem is solved by converting each row of the matrix into a **histogram** and then applying the **Largest Rectangle in Histogram** algorithm using a **monotonic stack**.
+
+### Key Idea:
+- Maintain an array `heights[]` where each element represents the height of consecutive `1`s in a column up to the current row.
+- For each row:
+  - Update `heights[]`
+  - Compute the maximum rectangle area in the histogram
+- Keep track of the maximum area obtained.
+
+This approach efficiently combines matrix traversal with stack-based histogram processing.
+
+---
+
+## ⚙️ Algorithm
+1. Initialize an array `heights` with size equal to the number of columns.
+2. Traverse each row of the matrix:
+   - If the cell value is `1`, increment the corresponding height.
+   - If the cell value is `0`, reset the height to `0`.
+3. After updating heights for a row, apply the Largest Rectangle in Histogram algorithm.
+4. Update the global maximum rectangle area.
+5. Return the maximum area found.
+
+---
+
+## 💻 C++ Implementation
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int largestRectangleArea(vector<int>& heights) {
+    stack<int> st;
+    int maxArea = 0;
+    int n = heights.size();
+
+    for (int i = 0; i <= n; i++) {
+        int currHeight = (i == n) ? 0 : heights[i];
+
+        while (!st.empty() && currHeight < heights[st.top()]) {
+            int h = heights[st.top()];
+            st.pop();
+            int width = st.empty() ? i : i - st.top() - 1;
+            maxArea = max(maxArea, h * width);
+        }
+        st.push(i);
+    }
+    return maxArea;
+}
+
+int maximalRectangle(vector<vector<char>>& matrix) {
+    if (matrix.empty()) return 0;
+
+    int rows = matrix.size();
+    int cols = matrix[0].size();
+    vector<int> heights(cols, 0);
+    int maxRectangle = 0;
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            if (matrix[i][j] == '1')
+                heights[j]++;
+            else
+                heights[j] = 0;
+        }
+        maxRectangle = max(maxRectangle, largestRectangleArea(heights));
+    }
+    return maxRectangle;
+}
